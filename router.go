@@ -1,4 +1,4 @@
-package router
+package gouter
 
 import (
 	"net/http"
@@ -15,7 +15,7 @@ type Router struct {
 }
 
 // NewRouter returns *Router with a new initialized *httprouter.Router embedded.
-func NewRouter() *Router {
+func NewGouter() *Router {
 	return &Router{router: httprouter.New()}
 }
 
