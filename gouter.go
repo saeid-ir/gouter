@@ -3,6 +3,7 @@ package gouter
 import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
+	"strings"
 )
 
 type middleware func(httprouter.Handle) httprouter.Handle
@@ -19,12 +20,19 @@ func NewGouter() *Router {
 	return &Router{router: httprouter.New()}
 }
 
+// joinPath join paths together
 func (r *Router) joinPath(path string) string {
 	if (r.path + path)[0] != '/' {
 		panic("path should start with '/' in path '" + path + "'.")
 	}
 
 	return r.path + path
+}
+
+// splitMethod split methods by space and return slice of methods
+func splitMethod(methodMany string) []string {
+	methodMany = strings.Trim(methodMany, " ")
+	return strings.Split(methodMany, " ")
 }
 
 // Group returns new *Router with given path and middlewares.
@@ -52,6 +60,20 @@ func (r *Router) Handle(method, path string, handle httprouter.Handle) {
 		handle = v(handle)
 	}
 	r.router.Handle(method, r.joinPath(path), handle)
+}
+
+func (r *Router) HandleMany(methodOrMulti, path string, handle httprouter.Handle) {
+	methods := splitMethod(methodOrMulti)
+	for _, method := range methods {
+		if method == "" {
+			method = "ANY"
+		}
+		if method == "ANY" || method == "ALL" {
+			//TODO: Handle Any
+			break
+		}
+		r.Handle(method, path, handle)
+	}
 }
 
 // GET is a shortcut for Router.Handle("GET", path, handle)

@@ -92,6 +92,10 @@ func TestMethod(t *testing.T) {
 		w.WriteHeader(http.StatusTeapot)
 	})
 
+	router.HandleMany("GET OPTIONS", "/many", func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+		w.WriteHeader(http.StatusTeapot)
+	})
+
 	samples := map[string]string{
 		"DELETE":  "/delete",
 		"GET":     "/get",
